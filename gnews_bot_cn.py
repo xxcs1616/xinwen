@@ -23,8 +23,8 @@ if not all([TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, GNEWS_API_KEY]):
     exit()
 
 # --- 策略与配置 ---
-MAX_ARTICLES_TO_SEND = 3
-SEND_INTERVAL_SECONDS = 20 # 在单次运行中发送多条消息的间隔
+MAX_ARTICLES_TO_SEND = 10
+SEND_INTERVAL_SECONDS = 3 # 在单次运行中发送多条消息的间隔
 SENT_ARTICLES_FILE = 'sent_articles.txt'
 SENT_TITLES_FILE = 'sent_titles.txt'
 CHANNEL_TOPIC_HEADER = "【全球新闻快讯】"
@@ -215,6 +215,7 @@ async def main():
 if __name__ == '__main__':
     jieba.initialize()
     asyncio.run(main())
+
 
 
 
