@@ -29,9 +29,9 @@ SENT_ARTICLES_FILE = 'sent_articles.txt'
 SENT_TITLES_FILE = 'sent_titles.txt'
 CHANNEL_TOPIC_HEADER = "【全球新闻快讯】"
 CONTACT_LINK_TEXT = "联系投稿"
-CONTACT_LINK_URL = "https://t.me/IE8GB"
+CONTACT_LINK_URL = "https://t.me/zhdbaaa"
 GROUP_LINK_TEXT = "加入讨论群"
-GROUP_LINK_URL = "https://t.me/DONG8NY"
+GROUP_LINK_URL = "https://t.me/zhdb_a"
 
 # --- 时间格式化函数 ---
 def format_china_time(time_str: str) -> str:
@@ -215,5 +215,6 @@ async def main():
 if __name__ == '__main__':
     jieba.initialize()
     asyncio.run(main())
+
 
 
