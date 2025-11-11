@@ -7,6 +7,7 @@ import re
 from dotenv import load_dotenv
 from telegram.constants import ParseMode
 from telegram.error import BadRequest
+from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from playwright.async_api import async_playwright, Playwright, Browser
 import jieba
 import jieba.analyse
@@ -24,13 +25,13 @@ if not all([TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, GNEWS_API_KEY]):
 
 # --- 策略与配置 ---
 MAX_ARTICLES_TO_SEND = 10
-SEND_INTERVAL_SECONDS = 3 # 在单次运行中发送多条消息的间隔
+SEND_INTERVAL_SECONDS = 5 # 在单次运行中发送多条消息的间隔
 SENT_ARTICLES_FILE = 'sent_articles.txt'
 SENT_TITLES_FILE = 'sent_titles.txt'
-CHANNEL_TOPIC_HEADER = "【全球新闻快讯】"
-CONTACT_LINK_TEXT = "联系投稿"
+CHANNEL_TOPIC_HEADER = "【众汇新闻快讯】"
+CONTACT_LINK_TEXT = "👤联系投稿"
 CONTACT_LINK_URL = "https://t.me/zhdbaaa"
-GROUP_LINK_TEXT = "加入讨论群"
+GROUP_LINK_TEXT = "🔥加入交流群🔥"
 GROUP_LINK_URL = "https://t.me/zhdb_a"
 
 # --- 时间格式化函数 ---
@@ -97,16 +98,18 @@ async def scrape_article_details(page, url: str) -> tuple[str, str]:
 async def send_single_article(bot, article, pub_time: str, summary: str):
     title, url, image_url = article.get('title'), article.get('url'), article.get('image')
     source_name = article.get('source', {}).get('name', '未知来源')
-    if not title or not url: return False
-    
+    if not title or not url:
+        return False
+
     display_time = format_china_time(pub_time) if pub_time else format_china_time(article.get('publishedAt'))
-    
+
+    # 关键词标签
     tags = jieba.analyse.extract_tags(title, topK=3)
     filtered_tags = [tag for tag in tags if not tag.isdigit()]
     hashtags = " ".join([f"#{tag}" for tag in filtered_tags]) if filtered_tags else ""
-    
+
     summary_text = summary if summary else article.get('description', '')
-    if summary_text and title in summary_text: 
+    if summary_text and title in summary_text:
         summary_text = ""
     if not summary_text:
         summary_text = f"如需摘要，请<a href='{url}'>点击此处</a>阅览。"
@@ -118,35 +121,53 @@ async def send_single_article(bot, article, pub_time: str, summary: str):
         "",
         f"详细信息：<a href='{url}'>点击阅读原文</a>",
         f"发布时间：{display_time}",
-        f"信息来源：<a href='{url}'>{source_name}</a>",
-        f"投稿联系：<a href='{CONTACT_LINK_URL}'>{CONTACT_LINK_TEXT}</a>",
-        f"💬 欢迎加入交流群讨论：<a href='{GROUP_LINK_URL}'>{GROUP_LINK_TEXT}</a>"
+        f"信息来源：<a href='{url}'>{source_name}</a>"
     ]
+
     caption = "\n".join(part for part in caption_parts if part.strip() or part == "")
 
+    # 按钮：一行一个按钮
+    keyboard = [
+        [InlineKeyboardButton(CONTACT_LINK_TEXT, url=CONTACT_LINK_URL)],
+        [InlineKeyboardButton(GROUP_LINK_TEXT, url=GROUP_LINK_URL)]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    # 长度限制处理
     if len(caption) > 1024:
-        oversize = len(caption) - 1024
-        if "点击此处" not in summary_text:
-             summary_text = summary_text[:-(oversize + 5)] + "..."
-             caption_parts[2] = summary_text
-             caption = "\n".join(part for part in caption_parts if part.strip() or part == "")
-        else:
-             caption = caption[:1020] + "..."
+        caption = caption[:1020] + "..."
 
     try:
         if image_url:
-            await bot.send_photo(chat_id=TELEGRAM_CHAT_ID, photo=image_url, caption=caption, parse_mode=ParseMode.HTML)
+            await bot.send_photo(
+                chat_id=TELEGRAM_CHAT_ID,
+                photo=image_url,
+                caption=caption,
+                parse_mode=ParseMode.HTML,
+                reply_markup=reply_markup
+            )
         else:
-            await bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=caption, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+            await bot.send_message(
+                chat_id=TELEGRAM_CHAT_ID,
+                text=caption,
+                parse_mode=ParseMode.HTML,
+                disable_web_page_preview=True,
+                reply_markup=reply_markup
+            )
         return True
     except Exception as e:
-        print(f"!!! 发送消息失败，错误原因: {e}")
+        print(f"!!! 发送失败: {e}")
         try:
-            print("--- 正在尝试发送纯文本版本... ---")
-            await bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=caption, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+            await bot.send_message(
+                chat_id=TELEGRAM_CHAT_ID,
+                text=caption,
+                parse_mode=ParseMode.HTML,
+                disable_web_page_preview=True,
+                reply_markup=reply_markup
+            )
             return True
         except Exception as fallback_e:
-            print(f"!!! 发送纯文本版本也失败了，最终错误原因: {fallback_e}")
+            print(f"!!! 纯文本发送也失败: {fallback_e}")
             return False
 
 # --- ★★★ 主程序 (已优化为单次运行并确保浏览器关闭) ★★★ ---
@@ -215,8 +236,3 @@ async def main():
 if __name__ == '__main__':
     jieba.initialize()
     asyncio.run(main())
-
-
-
-
-
