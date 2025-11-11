@@ -32,7 +32,7 @@ CHANNEL_TOPIC_HEADER = "【众汇新闻快讯】"
 CONTACT_LINK_TEXT = "👤联系投稿"
 CONTACT_LINK_URL = "https://t.me/zhdbaaa"
 GROUP_LINK_TEXT = "🔥加入交流群🔥"
-GROUP_LINK_URL = "https://t.me/zhdb_a"
+GROUP_LINK_URL = "https://t.me/+H19uq6vTUDwxNTg0"
 
 # --- 时间格式化函数 ---
 def format_china_time(time_str: str) -> str:
@@ -236,3 +236,4 @@ async def main():
 if __name__ == '__main__':
     jieba.initialize()
     asyncio.run(main())
+
