@@ -2306,3 +2306,5 @@ https://news.ifeng.com/c/8qKuFbZrjBm
 http://www.china.com.cn/txt/2026-01/30/content_118309004.shtml
 https://m.sohu.com/a/981876555_121620820?scm=10001.325_13-325_13.0.0-0-0-0-0.5_1334
 https://www.huxiu.com/article/4831082.html
+https://app.xinhuanet.com/news/article.html?articleId=8d45079839040440168c55fefd03b1ea
+https://app.xinhuanet.com/news/article.html?articleId=f245f0dda8eaec3868b6ed6f9aca404a
