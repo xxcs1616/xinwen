@@ -3130,3 +3130,5 @@ https://app.xinhuanet.com/news/article.html?articleId=2c4c5a3eaa75adb3899708038c
 http://news.cnhubei.com/content/2026-02/22/content_19835038.html
 https://tech.ifeng.com/c/8qvgknOMe06
 https://www.thepaper.cn/newsDetail_forward_32471977
+https://app.xinhuanet.com/news/article.html?articleId=427765c16901cdb6970124ceda37c02e
+https://tech.gmw.cn/2026-02/22/content_38603230.htm
